@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+####### Configure environment
+
+set -o errexit    # always exit on error
+set -o errtrace   # trap errors in functions as well
+set -o pipefail   # don't ignore exit codes when piping output
+set -o posix      # more strict failures in subshells
+# set -x          # enable debugging
+
+# Read options
+build_dir=$1
+cache_dir=$2
+env_dir=$3
+
+# Configure directories
+heroku_dir=$build_dir/.heroku
+ember_dir="$build_dir/$EMBER_DIR"
+ember_cache_dir="$cache_dir/ember_dependencies_cache"
+mkdir -p $heroku_dir/node
+warnings=$(mktemp)
+
+# Avoid GIT_DIR leak from previous build steps
+unset GIT_DIR
+
+# Provide hook to deal with errors
+trap build_failed ERR
+
+head "Building dependencies"
+
+cd client
+/app/.heroku/node/bin/npm install
+/app/node_modules/.bin/bower install
+
+cd ..
+./build-cli.sh
