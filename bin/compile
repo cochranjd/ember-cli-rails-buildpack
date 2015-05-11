@@ -19,4 +19,4 @@ bower install
 
 # Back out to root to run install script
 cd ..
-source ./build-cli.sh
+./build-cli.sh
