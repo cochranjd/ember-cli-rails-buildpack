@@ -4,31 +4,32 @@
 
 set -o errexit    # always exit on error
 set -o errtrace   # trap errors in functions as well
-set -o pipefail   # don't ignore exit codes when piping output
+set -o pipefail   # dont ignore exit codes when piping output
 set -o posix      # more strict failures in subshells
-# set -x          # enable debugging
+set -x          # enable debugging
 
+echo "Reading Options"
 # Read options
 build_dir=$1
 cache_dir=$2
 env_dir=$3
 
-# Configure directories
-heroku_dir=$build_dir/.heroku
-ember_dir="$build_dir/$EMBER_DIR"
-ember_cache_dir="$cache_dir/ember_dependencies_cache"
-mkdir -p $heroku_dir/node
-warnings=$(mktemp)
-
+echo "UNSET GIT"
 # Avoid GIT_DIR leak from previous build steps
 unset GIT_DIR
 
 # Provide hook to deal with errors
 trap build_failed ERR
 
+echo "GOING INTO CLIENT"
 cd client
+echo "RUNNING NPM INSTALL"
 /app/.heroku/node/bin/npm install
+echo "RUNNING BOWER INSTALL"
 /app/node_modules/.bin/bower install
 
+echo "BACKING OUT"
 cd ..
+echo "RUNNING BUILD"
 ./build-cli.sh
+echo "DONE"
