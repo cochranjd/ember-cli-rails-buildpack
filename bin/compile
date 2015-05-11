@@ -22,6 +22,7 @@ unset GIT_DIR
 trap build_failed ERR
 
 echo "GOING INTO CLIENT"
+echo $pwd
 cd client
 echo "RUNNING NPM INSTALL"
 /app/.heroku/node/bin/npm install
