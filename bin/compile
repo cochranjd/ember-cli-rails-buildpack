@@ -8,30 +8,15 @@ set -o pipefail   # dont ignore exit codes when piping output
 set -o posix      # more strict failures in subshells
 set -x          # enable debugging
 
-echo "Reading Options"
 # Read options
 build_dir=$1
-cache_dir=$2
 env_dir=$3
 
-echo "UNSET GIT"
-# Avoid GIT_DIR leak from previous build steps
-unset GIT_DIR
-
-# Provide hook to deal with errors
-trap build_failed ERR
-
-echo "GOING INTO CLIENT"
-echo $1
-echo $pwd
+# Go in to client folder for npm & bower installs
 cd $1/client
-echo "RUNNING NPM INSTALL"
 npm install
-echo "RUNNING BOWER INSTALL"
 bower install
 
-echo "BACKING OUT"
+# Back out to root to run install script
 cd ..
-echo "RUNNING BUILD"
 ./build-cli.sh
-echo "DONE"
